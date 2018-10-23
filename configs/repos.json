@@ -1,0 +1,8 @@
+{
+    "bikemap-backend": {
+        "git_url": "git@github.com:jroman00/bikemap-backend.git"
+    },
+    "bikemap-frontend-vuejs": {
+        "git_url": "git@github.com:jroman00/bikemap-frontend-vuejs.git"
+    }
+}

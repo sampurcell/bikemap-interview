@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ruleset>
+    <description>The coding standard</description>
+
+    <!-- Generic -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
+    <rule ref="Generic.ControlStructures.InlineControlStructure" />
+    <rule ref="Generic.Files.LineEndings" />
+    <rule ref="Generic.Formatting.SpaceAfterCast" />
+
+    <!-- PSR -->
+    <rule ref="PSR2">
+        <exclude name="Generic.Files.LineLength" />
+    </rule>
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>./public/index.php</exclude-pattern>
+    </rule>
+
+    <!-- Squiz -->
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag" />
+    <rule ref="Squiz.Strings.ConcatenationSpacing">
+        <properties>
+            <property name="spacing" value="1" />
+            <property name="ignoreNewlines" value="true" />
+        </properties>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
+</ruleset>

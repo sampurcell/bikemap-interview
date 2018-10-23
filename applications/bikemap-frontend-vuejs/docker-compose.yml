@@ -1,0 +1,18 @@
+version: '3'
+services:
+  bikemap-frontend-vuejs:
+    container_name: bikemap-frontend-vuejs
+    build: .
+    command: ["npm", "run", "serve"]
+    ports:
+      - "3080:3080"
+    volumes:
+      - ${PWD}:/var/www
+      - /var/www/dist
+      - /var/www/node_modules
+    networks:
+      - localenv_network
+
+networks:
+  localenv_network:
+    external: true

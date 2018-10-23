@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -e
+
+readonly PARENT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)
+readonly LOCALENV_DIR=$(cd $(dirname $(dirname $(dirname "$PARENT_DIR"))) && pwd -P)
+
+readonly APP_DIR=$(cd $(dirname "$PARENT_DIR") && pwd -P)
+
+source $LOCALENV_DIR/bin/utils/shell-helpers.sh
+
+# Main function
+main() {
+  echo_yellow "Initializing bikemap-backend repo..."
+
+  # Setup local database
+  $LOCALENV_DIR/bin/utils/setup-local-mysql-database \
+    -c global-mysql \
+    -n bikemap_backend \
+    -u root \
+    -p P@ssw0rd
+
+  (
+    # Make sure script is running from the main application directory
+    cd $APP_DIR
+
+    # Build docker images
+    docker-compose build
+
+    # Install dependencies
+    docker-compose run bikemap-backend composer install
+
+    # Run migrations
+    docker-compose run bikemap-backend vendor/bin/phinx migrate -e development
+
+    # Seed database
+    docker-compose run bikemap-backend vendor/bin/phinx seed:run
+
+    # Start docker containers
+    docker-compose up -d
+  )
+
+  echo_green "bikemap-backend repo initialized successfully!\n"
+}
+
+main

@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  global-mysql:
+    container_name: global-mysql
+    image: mysql:5.7.21
+    ports:
+      - "33066:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=P@ssw0rd
+    networks:
+      - localenv_network
+  global-postgres:
+    container_name: global-postgres
+    image: postgres:9.6.7-alpine
+    ports:
+      - "54321:5432"
+    networks:
+      - localenv_network
+
+networks:
+  localenv_network:
+    external: true

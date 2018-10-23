@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  bikemap-backend:
+    container_name: bikemap-backend
+    build: .
+    ports:
+      - "3081:3081"
+    volumes:
+      - ${PWD}:/var/www
+    networks:
+      - localenv_network
+
+networks:
+  localenv_network:
+    external: true

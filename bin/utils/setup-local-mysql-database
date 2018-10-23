@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+set -e
+
+readonly PARENT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)
+readonly LOCALENV_DIR=$(cd $(dirname $(dirname "$PARENT_DIR")) && pwd -P)
+
+source $LOCALENV_DIR/bin/utils/shell-helpers.sh
+
+# Set docker variables
+readonly EXEC_COMMAND="docker exec"
+
+# Set input variables
+DB_CONTAINER=""
+DB_NAME=""
+DB_USER=""
+DB_PASSWORD=""
+
+# Function that checks if the database already exists
+db_exists() {
+  # Return 0 or 1 based on if the DB exists already
+  $EXEC_COMMAND $DB_CONTAINER [ -d /var/lib/mysql/$DB_NAME ]
+}
+
+# Function to create the database
+create_db() {
+  echo_yellow "Creating database: $DB_NAME"
+  $EXEC_COMMAND $DB_CONTAINER mysql -h $DB_CONTAINER -u $DB_USER -v -p$DB_PASSWORD -e "CREATE DATABASE $DB_NAME"
+}
+
+# Function that verifies required input was passed in
+verify_input() {
+  # Verify required inputs are not empty
+  [ ! -z "$DB_CONTAINER" ] && [ ! -z "$DB_NAME" ] && [ ! -z "$DB_USER" ] && [ ! -z "$DB_PASSWORD" ]
+}
+
+# Function that prints out debug info
+print_debug_info() {
+  echo_yellow "${TAB}Debug info:"
+  echo_yellow "${TABx2}DB Container: $DB_CONTAINER"
+  echo_yellow "${TABx2}DB Name: $DB_NAME"
+  echo_yellow "${TABx2}DB User: $DB_USER"
+  echo_yellow "${TABx2}DB Password: $DB_PASSWORD"
+}
+
+# Function that outputs usage information
+usage() {
+  cat <<EOF
+
+Usage: $BIN_ROOT/$(basename $0) <options>
+
+Script used to setup a local database for an application
+
+Options:
+  -c (required)     The name of the database container to use when setting the database up
+  -n (required)     The name of the database to setup
+  -u (required)     The name of the DB user to use when setting the database up
+  -p (required)     The password of the DB user to use when setting the database up
+  -h|--help         Print this message and quit
+
+EOF
+}
+
+# Main function
+main() {
+  echo_yellow "Creating mysql database..."
+
+  print_debug_info
+
+  db_exists && echo_green "Database already exists: $DB_NAME\n" && exit 0
+
+  create_db
+
+  echo_green "Database successfully set up!\n"
+}
+
+# Parse input options
+while getopts ":c:n:u:p:h-:" opt; do
+  case "$opt" in
+    c) DB_CONTAINER=$OPTARG;;
+    n) DB_NAME=$OPTARG;;
+    u) DB_USER=$OPTARG;;
+    p) DB_PASSWORD=$OPTARG;;
+    h) usage && exit 0;;
+    -)
+      case "${OPTARG}" in
+        help) usage && exit 0;;
+        *) usage && exit 1;;
+      esac
+    ;;
+    \?) echo_red "Invalid option: -$OPTARG." && usage && exit 1;;
+    :) die "Option -$OPTARG requires an argument.";;
+  esac
+done
+
+# Verify input
+! verify_input && print_debug_info && echo_red "Missing script options" && usage && exit 1
+
+# Execute main functionality
+main

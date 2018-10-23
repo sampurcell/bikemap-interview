@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -e
+
+readonly PARENT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)
+readonly LOCALENV_DIR=$(cd $(dirname "$PARENT_DIR") && pwd -P)
+
+readonly BIN_DIR=$LOCALENV_DIR/bin
+
+source $BIN_DIR/utils/shell-helpers.sh
+
+# Main function
+main() {
+  echo_yellow "Starting localenv..."
+
+  # Start databases
+  $BIN_DIR/globals/start-global-databases
+
+  # Start cache
+  $BIN_DIR/globals/start-global-cache
+
+  # Start repos
+  $BIN_DIR/repos/start-repos
+
+  echo_green "localenv successfully started!\n"
+}
+
+main

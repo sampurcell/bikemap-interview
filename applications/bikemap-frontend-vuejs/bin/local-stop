@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -e
+
+readonly PARENT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)
+readonly LOCALENV_DIR=$(cd $(dirname $(dirname $(dirname "$PARENT_DIR"))) && pwd -P)
+
+readonly APP_DIR=$(cd $(dirname "$PARENT_DIR") && pwd -P)
+
+source $LOCALENV_DIR/bin/utils/shell-helpers.sh
+
+# Main function
+main() {
+  echo_yellow "Stopping bikemap-frontend-vuejs repo..."
+
+  (
+    # Make sure script is running from the main application directory
+    cd $APP_DIR
+
+    # Stop docker containers
+    docker-compose stop
+  )
+
+  echo_green "bikemap-frontend-vuejs repo stopped successfully!\n"
+}
+
+main
