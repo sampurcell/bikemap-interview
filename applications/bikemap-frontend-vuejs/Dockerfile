@@ -7,13 +7,6 @@ ENV DASHBOARD_RELEASE_VERSION=1.1.0
 RUN apk add --update \
     nodejs=8.9.3-r1
 
-# Create directory for nginx.pid
-RUN mkdir -p /run/nginx
-
-# nginx configs
-COPY docker/etc/nginx/nginx.conf /etc/nginx/
-COPY docker/etc/nginx/conf.d/ /etc/nginx/conf.d/
-
 # Set working directory and copy source
 WORKDIR /var/www
 COPY . /var/www
